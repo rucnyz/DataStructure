@@ -33,7 +33,7 @@ bool cmp(char &a, char &b)
 	{
 		return true;
 	}
-	else if (a == '*' || a == '/')
+	else if (a == '*' || a == '/' || a == '%')
 	{
 		if (b == '^')
 		{
@@ -81,6 +81,10 @@ T calculate(T a, T b, char &op)
 	else if (op == '/')
 	{
 		return a / b;
+	}
+	else if (op == '%')
+	{
+		return (int) a % (int) b;
 	}
 	else
 	{
@@ -135,7 +139,7 @@ bool findLocalVar(string &expr, vector<string> &LocalVar)
 		if (((*i) >= 48 && (*i) <= 57) || (*i == 46) ||
 		    *i == '+' || *i == '-' || *i == '*' ||
 		    *i == '/' || *i == '^' || *i == '#' ||
-		    *i == '(' || *i == ')')
+		    *i == '%' || *i == '(' || *i == ')')
 		{
 			if (!var.empty())
 			{
@@ -164,7 +168,7 @@ bool findLocalVar(string &expr, vector<string> &LocalVar)
 	}
 }
 
-/// 计算表达式(无本地变量)
+/// 计算表达式
 /// \param expr
 /// \param result
 /// \return
@@ -190,7 +194,7 @@ int calExpr(string &expr, double &result)
 		}
 		else if (*i == '+' || *i == '-' || *i == '*'
 		         || *i == '/' || *i == '^' || *i == '#'
-		         || *i == '(' || *i == ')')
+		         || *i == '%' || *i == '(' || *i == ')')
 		{
 			if (!num.empty())
 			{
