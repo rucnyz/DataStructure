@@ -122,6 +122,10 @@ bool isValidExpr(string &expr)
 	}
 }
 
+/// 找到表达式中的本地变量
+/// \param expr
+/// \param LocalVar
+/// \return
 bool findLocalVar(string &expr, vector<string> &LocalVar)
 {
 	string temp;
@@ -168,7 +172,7 @@ int calExpr(string &expr, double &result)
 {
 	if (!isValidExpr(expr))
 	{
-		return false;
+		return ERROR;
 	}
 	expr.append("#");
 	string num;
@@ -266,6 +270,13 @@ int main()
 				string temp;
 				cout << "请输入" << *i << "的值:" << endl;
 				getline(cin, temp);
+				//用于在ax的中间插入*
+				if (expr.find(*i) > 0 &&
+				    expr[expr.find(*i) - 1] >= 48 && expr[expr.find(*i) - 1] <= 57)
+				{
+					temp.insert(0, "*");
+				}
+				//替换
 				expr.replace(expr.find(*i), (*i).size(), temp);
 			}
 		}
