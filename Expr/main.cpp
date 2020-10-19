@@ -128,12 +128,13 @@ bool isValidExpr(string &expr)
 
 /// 找到表达式中的本地变量
 /// \param expr
-/// \param LocalVar
-/// \return
+/// \param LocalVar 将本地变量以字符传给它
+/// \return 返回是否找到
 bool findLocalVar(string &expr, vector<string> &LocalVar)
 {
 	string temp;
 	string var;
+	int flag;
 	for (auto i = expr.begin(); i < expr.end(); ++i)
 	{
 		if (((*i) >= 48 && (*i) <= 57) || (*i == 46) ||
@@ -143,7 +144,19 @@ bool findLocalVar(string &expr, vector<string> &LocalVar)
 		{
 			if (!var.empty())
 			{
-				LocalVar.push_back(var);
+				flag = 0;
+				for (auto j = LocalVar.begin(); j < LocalVar.end(); ++j)
+				{
+					if (*j == var)
+					{
+						flag = 1;
+						break;
+					}
+				}
+				if (flag == 0)
+				{
+					LocalVar.push_back(var);
+				}
 				var.clear();
 			}
 
@@ -155,7 +168,19 @@ bool findLocalVar(string &expr, vector<string> &LocalVar)
 	}
 	if (!var.empty())
 	{
-		LocalVar.push_back(var);
+		flag = 0;
+		for (auto j = LocalVar.begin(); j < LocalVar.end(); ++j)
+		{
+			if (*j == var)
+			{
+				flag = 1;
+				break;
+			}
+		}
+		if (flag == 0)
+		{
+			LocalVar.push_back(var);
+		}
 		var.clear();
 	}
 	if (!LocalVar.empty())
@@ -170,8 +195,8 @@ bool findLocalVar(string &expr, vector<string> &LocalVar)
 
 /// 计算表达式
 /// \param expr
-/// \param result
-/// \return
+/// \param result 运算结果
+/// \return 判断表达式是否出错
 int calExpr(string &expr, double &result)
 {
 	if (!isValidExpr(expr))
@@ -256,8 +281,7 @@ int main()
 	{
 		string expr;
 		cout << "请输入表达式:" << endl;
-		cout << "(自定义变量请使用字母与其他符号，不要使用数字。)" << endl;
-		cout << "输入quit退出程序" << endl;
+		cout << "(自定义变量请使用字母与其他符号，不要使用数字。输入quit退出程序)" << endl;
 		getline(cin, expr);
 		if (expr == "quit")
 		{
@@ -274,26 +298,40 @@ int main()
 				string temp;
 				cout << "请输入" << *i << "的值:" << endl;
 				getline(cin, temp);
-				//用于在ax的中间插入*
-				if (expr.find(*i) > 0 &&
-				    expr[expr.find(*i) - 1] >= 48 && expr[expr.find(*i) - 1] <= 57)
+				//全体替换
+				while (true)
 				{
-					temp.insert(0, "*");
+					size_t index = expr.find(*i);
+					if (index == 0xFFFFFFFFFFFFFFFF)
+					{
+						break;
+					}
+					//用于在ax的中间插入*
+					if (index > 0 &&
+					    expr[index - 1] >= 48 && expr[index - 1] <= 57)
+					{
+						temp.insert(0, "*");
+						expr.replace(index, (*i).size(), temp);
+						//去掉乘号
+						temp = temp.substr(1, temp.size() - 1);
+					}
+					else
+					{
+						expr.replace(index, (*i).size(), temp);
+					}
 				}
-				//替换
-				expr.replace(expr.find(*i), (*i).size(), temp);
 			}
 		}
-		cout << "结果是：" << endl;
 		if (calExpr(expr, result) == ERROR)
 		{
 			cout << "表达式输入有误！" << endl;
 		}
 		else
 		{
+			cout << "结果是：" << endl;
 			cout << result << endl;
 		}
-
+		cout << "==============================" << endl;
 	}
 	return 0;
 }
