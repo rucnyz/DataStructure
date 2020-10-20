@@ -62,7 +62,7 @@ bool cmp(char &a, char &b)
 /// \param a
 /// \param b
 /// \param op
-/// \return
+/// \return 计算结果
 template<typename T>
 T calculate(T a, T b, char &op)
 {
@@ -144,6 +144,11 @@ bool findLocalVar(string &expr, vector<string> &LocalVar)
 		{
 			if (!var.empty())
 			{
+				if ((*i) >= 48 && (*i) <= 57)
+				{
+					var.push_back(*i);
+					continue;
+				}
 				flag = 0;
 				for (auto j = LocalVar.begin(); j < LocalVar.end(); ++j)
 				{
@@ -293,36 +298,61 @@ int main()
 		vector<string> var;
 		if (findLocalVar(expr, var))
 		{
-			for (auto i = var.begin(); i < var.end(); ++i)
+			string x;
+			while (true)
 			{
-				string temp;
-				cout << "请输入" << *i << "的值:" << endl;
-				getline(cin, temp);
-				//全体替换
-				while (true)
+				string tmp = expr;
+				//一次计算
+				for (auto i = var.begin(); i < var.end(); ++i)
 				{
-					size_t index = expr.find(*i);
-					if (index == 0xFFFFFFFFFFFFFFFF)
+					string temp;
+					cout << "请输入" << *i << "的值:" << endl;
+					getline(cin, temp);
+					//全体替换
+					while (true)
 					{
-						break;
+						size_t index = tmp.find(*i);
+						if (index == 0xFFFFFFFFFFFFFFFF)
+						{
+							break;
+						}
+						//用于在ax的中间插入*
+						if (index > 0 &&
+						    tmp[index - 1] >= 48 && tmp[index - 1] <= 57)
+						{
+							temp.insert(0, "*");
+							tmp.replace(index, (*i).size(), temp);
+							//去掉乘号
+							temp = temp.substr(1, temp.size() - 1);
+						}
+						else
+						{
+							tmp.replace(index, (*i).size(), temp);
+						}
 					}
-					//用于在ax的中间插入*
-					if (index > 0 &&
-					    expr[index - 1] >= 48 && expr[index - 1] <= 57)
-					{
-						temp.insert(0, "*");
-						expr.replace(index, (*i).size(), temp);
-						//去掉乘号
-						temp = temp.substr(1, temp.size() - 1);
-					}
-					else
-					{
-						expr.replace(index, (*i).size(), temp);
-					}
+				}
+				if (calExpr(tmp, result) == ERROR)
+				{
+					cout << "表达式输入有误！" << endl;
+				}
+				else
+				{
+					cout << "结果是：" << endl;
+					cout << result << endl;
+				}
+				cout << "请选择是否更换变量进行计算(是请输入1，否则输入0,退出请输入quit):" << endl;
+				getline(cin, x);
+				if (x[0] == '0')
+				{
+					break;
+				}
+				else if (x == "quit")
+				{
+					return 0;
 				}
 			}
 		}
-		if (calExpr(expr, result) == ERROR)
+		else if (calExpr(expr, result) == ERROR)
 		{
 			cout << "表达式输入有误！" << endl;
 		}
