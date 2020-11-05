@@ -14,9 +14,13 @@
 #include <cmath>
 #include <vector>
 
+using namespace std;
 #define ERROR 1
 #define NORMAL 2
+#define DEFINITION 3
+#define RUN 4
 
+extern vector<pair<string, string> > func;
 using namespace std;
 
 bool cmp(char &a, char &b);
@@ -30,5 +34,8 @@ bool isValidExpr(string &expr);
 
 int calExpr(string &expr, double &result);
 
+int preProcess(string &expr, double &value);
+
+int process(string &expr, int flag, double value);
 
 #endif //EXPR_EXPR_H
