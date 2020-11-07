@@ -287,6 +287,18 @@ int preProcess(string &expr, double &value)
 	{
 		string p = expr.substr(4, expr.find('(') - 4);
 		expr = expr.substr(expr.find('=') + 1);
+		if (!func.empty())
+		{
+			for (auto i = func.begin(); i < func.end(); ++i)
+			{
+				int start = expr.find((*i).first);
+				if (start != -1)
+				{
+					int end = expr.substr(start).find(')');
+					expr.replace(start, end + 1, (*i).second);
+				}
+			}
+		}
 		func.emplace_back(p, expr);
 		cout << "函数" << p << "已记录！" << endl;
 		return DEFINITION;

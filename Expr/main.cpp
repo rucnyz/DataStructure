@@ -108,7 +108,7 @@ int mat()
 			cout << mat1;
 			cout << mat2;
 			cout << "结果是:";
-			cout << mat1.dot(mat2) << endl;
+			cout << mat1 * mat2 << endl;
 			break;
 		case '6':
 			cout << "请输入矩阵:" << endl;
