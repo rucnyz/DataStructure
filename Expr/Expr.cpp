@@ -299,6 +299,8 @@ int preProcess(string &expr, double &value)
 				}
 			}
 		}
+		expr.insert(0, "(");
+		expr.push_back(')');
 		func.emplace_back(p, expr);
 		cout << "函数" << p << "已记录！" << endl;
 		return DEFINITION;

@@ -55,7 +55,7 @@ int mat()
 			cout << "您输入的矩阵是:" << endl;
 			cout << mat1;
 			cout << mat2;
-			cout << "结果是:";
+			cout << "结果是:" << endl;
 			cout << mat1 + mat2;
 			break;
 		case '2':
@@ -68,7 +68,7 @@ int mat()
 			cout << "您输入的矩阵是:" << endl;
 			cout << mat1;
 			cout << mat2;
-			cout << "结果是:";
+			cout << "结果是:" << endl;
 			cout << mat1 - mat2;
 			break;
 		case '3':
@@ -81,7 +81,7 @@ int mat()
 			cout << "您输入的矩阵是:" << endl;
 			cout << mat1;
 			cout << mat2;
-			cout << "结果是:";
+			cout << "结果是:" << endl;
 			cout << mat1.mul(mat2);
 			break;
 		case '4':
@@ -94,7 +94,7 @@ int mat()
 			cout << "您输入的矩阵是:" << endl;
 			cout << mat1;
 			cout << mat2;
-			cout << "结果是:";
+			cout << "结果是:" << endl;
 			cout << mat1 / mat2;
 			break;
 		case '5':
@@ -107,7 +107,7 @@ int mat()
 			cout << "您输入的矩阵是:" << endl;
 			cout << mat1;
 			cout << mat2;
-			cout << "结果是:";
+			cout << "结果是:" << endl;
 			cout << mat1 * mat2 << endl;
 			break;
 		case '6':
@@ -116,15 +116,26 @@ int mat()
 			mat1 = processInput(str1);
 			cout << "您输入的矩阵是:" << endl;
 			cout << mat1;
-			cout << "结果是:";
+			cout << "结果是:" << endl;
 			cout << mat1.getDet() << endl;
 			break;
 		case '7':
+		{
 			cout << "请输入矩阵:" << endl;
 			getline(cin, str1);
 			mat1 = processInput(str1);
-//			cout << mat1.;
+			cout << "您输入的矩阵是:" << endl;
+			cout << mat1;
+			cout << "结果是:" << endl;
+			double *values;
+			int a = mat1.eigenvalues(values);
+			for (int i = 0; i < a; ++i)
+			{
+				cout << values[i] << " ";
+			}
+			cout << endl;
 			break;
+		}
 		case '8':
 			cout << "请输入矩阵:" << endl;
 			getline(cin, str1);

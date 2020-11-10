@@ -49,7 +49,7 @@ public:
 
 	Matrix inv_LU() const;
 
-	Matrix eigenvalues() const;
+	int eigenvalues(double *&array) const;
 
 	Matrix T() const;
 

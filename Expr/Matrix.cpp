@@ -294,17 +294,6 @@ Matrix Matrix::inv_LU() const
 
 	Matrix result(u_inverse * l_inverse);
 
-	for (int i = 0; i < result.m_row; ++i)
-	{
-		for (int j = 0; j < result.m_col; ++j)
-		{
-			if (_isnan(result.get(i, j)))
-			{
-				throw "Error in inv_LU(): the result is 1.#INF or -1.#IND or 1.#INF000 or -1.#INF000.";
-			}
-		}
-	}
-
 	return result;
 }
 
@@ -666,10 +655,28 @@ ostream &operator<<(ostream &_out, const Matrix &_m)
 	return _out;
 }
 
-Matrix Matrix::eigenvalues() const
+int Matrix::eigenvalues(double *&array) const
 {
-
-	return Matrix();
+	double lambda = -20;
+	int i = 0;
+	array = new double[10];
+	Matrix E(m_row, m_col);
+	for (int j = 0; j < m_row; ++j)
+	{
+		E.set(j, j, 1);
+	}
+	while (lambda < 20)
+	{
+		Matrix temp = lambda * E - (*this);
+		double a = temp.getDet();
+		if ((a != a) || (fabs(a) < EPSILON))
+		{
+			array[i] = lambda;
+			i++;
+		}
+		lambda += 0.5;
+	}
+	return i;
 }
 
 
