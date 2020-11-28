@@ -19,6 +19,23 @@ typedef struct BiTNode
 	struct BiTNode *lchild{}, *rchild{};
 } BiTNode, *BiTree;
 
+bool CreateBiTreeInList(BiTree &T)
+{
+	string input;
+	cout << "请输入广义表:" << endl;
+	cin.clear();
+	getline(cin, input);
+	for (auto i = input.begin(); i < input.end(); ++i)
+	{
+		if (*i == ' ')
+		{
+			continue;
+		}
+
+	}
+	return true;
+}
+
 bool CreateBiTree(BiTree &T)
 {
 	char ch;
@@ -43,7 +60,7 @@ bool CreateBiTree(BiTree &T)
 
 bool PrintElement(TELemType e)
 {
-	cout << e << endl;
+	cout << e;
 	return true;
 }
 
@@ -89,15 +106,15 @@ int countLeaves(BiTree &T)
 	return count;
 }
 
-bool PreOrderTraverse_reverse(BiTree &T, bool(*Visit)(TELemType e))
+bool PreOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType e))
 {
 	if (T)
 	{
 		if (Visit(T->data))
 		{
-			if (PreOrderTraverse_reverse(T->lchild, Visit))
+			if (PreOrderTraverse_recurse(T->lchild, Visit))
 			{
-				if (PreOrderTraverse_reverse(T->rchild, Visit))
+				if (PreOrderTraverse_recurse(T->rchild, Visit))
 				{
 					return true;
 				}
@@ -108,20 +125,38 @@ bool PreOrderTraverse_reverse(BiTree &T, bool(*Visit)(TELemType e))
 	return true;
 }
 
-bool PreOrderTraverse_loop(BiTree &T, bool(*Visit)(TELemType e))
+bool PreOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType e))
 {
+	stack <BiTree> treeStack;
+	if (!T)
+	{
+		printf("空树！\n");
+		return false;
+	}
+	while (T || !treeStack.empty())
+	{
+		while (T)
+		{
+			treeStack.push(T);
+			Visit(T->data);
+			T = T->lchild;
+		}
+		T = treeStack.top();
+		treeStack.pop();
+		T = T->rchild;
+	}
 	return true;
 }
 
-bool InOrderTraverse_reverse(BiTree &T, bool(*Visit)(TELemType e))
+bool InOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType e))
 {
 	if (T)
 	{
-		if (InOrderTraverse_reverse(T->lchild, Visit))
+		if (InOrderTraverse_recurse(T->lchild, Visit))
 		{
 			if (Visit(T->data))
 			{
-				if (InOrderTraverse_reverse(T->rchild, Visit))
+				if (InOrderTraverse_recurse(T->rchild, Visit))
 				{
 					return true;
 				}
@@ -132,23 +167,73 @@ bool InOrderTraverse_reverse(BiTree &T, bool(*Visit)(TELemType e))
 	return true;
 }
 
-bool InOrderTraverse_loop(BiTree &T, bool(*Visit)(TELemType e))
+bool InOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType e))
 {
+	stack <BiTree> treeStack;
+	if (!T)
+	{
+		printf("空树！\n");
+		return false;
+	}
+
+	while (T || !treeStack.empty())
+	{
+		while (T)
+		{
+			treeStack.push(T);
+			T = T->lchild;
+		}
+		T = treeStack.top();
+		treeStack.pop();
+		Visit(T->data);
+		T = T->rchild;
+	}
 	return true;
 }
 
-bool PostOrderTraverse_loop(BiTree &T, bool(*Visit)(TELemType e))
+bool PostOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType e))
 {
+	int flag[20];
+	stack <BiTree> treeStack;
+	if (!T)
+	{
+		printf("空树！\n");
+		return false;
+	}
+	while (T)
+	{
+		treeStack.push(T);
+		flag[treeStack.size()] = 0;
+		T = T->lchild;
+	}
+	while (!treeStack.empty())
+	{
+		T = treeStack.top();
+		while (T && T->rchild && flag[treeStack.size()] == 0)
+		{
+			flag[treeStack.size()] = 1;
+			T = T->rchild;
+			while (T)
+			{
+				treeStack.push(T);
+				flag[treeStack.size()] = 0;
+				T = T->lchild;
+			}
+		}
+		T = treeStack.top();
+		Visit(T->data);
+		treeStack.pop();
+	}
 	return true;
 }
 
-bool PostOrderTraverse_reverse(BiTree &T, bool(*Visit)(TELemType e))
+bool PostOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType e))
 {
 	if (T)
 	{
-		if (PostOrderTraverse_reverse(T->lchild, Visit))
+		if (PostOrderTraverse_recurse(T->lchild, Visit))
 		{
-			if (PostOrderTraverse_reverse(T->rchild, Visit))
+			if (PostOrderTraverse_recurse(T->rchild, Visit))
 			{
 				if (Visit(T->data))
 				{
