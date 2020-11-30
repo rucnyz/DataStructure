@@ -24,9 +24,8 @@ bool CreateBiTreeInList(BiTree &T)
 	string str;
 	cout << "请输入广义表" << endl;
 	cin >> str;
-	//str是二叉树的广义表表示的字符串
-	//st是栈空间，b是新建二叉链表的根指针
-	BiTNode *St[100], *P = nullptr;
+
+	BiTNode *St[50], *P = nullptr;
 	int top = -1, k = 0;
 	char ch;
 	//初始化的二叉链为空
@@ -234,7 +233,7 @@ bool InOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType))
 
 bool PostOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType))
 {
-	int flag[20];
+	int flag[50];
 	stack <BiTree> treeStack;
 	if (!T)
 	{
