@@ -60,7 +60,8 @@ int main()
 		cout << "================" << endl;
 
 		cout << "层次遍历:" << endl;
-//		LevelOrderTraverse(tree, PrintElement);
+		LevelOrderTraverse(tree, PrintElement);
+		cout << endl;
 		cout << "================" << endl;
 	}
 	return 0;

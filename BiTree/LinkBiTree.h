@@ -21,17 +21,58 @@ typedef struct BiTNode
 
 bool CreateBiTreeInList(BiTree &T)
 {
-	string input;
-	cout << "请输入广义表:" << endl;
-	cin.clear();
-	getline(cin, input);
-	for (auto i = input.begin(); i < input.end(); ++i)
+	string str;
+	cout << "请输入广义表" << endl;
+	cin >> str;
+	//str是二叉树的广义表表示的字符串
+	//st是栈空间，b是新建二叉链表的根指针
+	BiTNode *St[100], *P = nullptr;
+	int top = -1, k = 0;
+	char ch;
+	//初始化的二叉链为空
+	T = nullptr;
+	for (auto j = str.begin(); j < str.end(); j++)
 	{
-		if (*i == ' ')
+		ch = *j;
+		switch (ch)
 		{
-			continue;
+			//作为左结点
+			case '(':
+				top++;
+				St[top] = P;
+				k = 1;
+				break;
+			case ')':
+				top--;
+				break;
+				//作为右结点
+			case ',':
+				k = 2;
+				break;
+			default:
+				P = (BiTNode *) malloc(sizeof(BiTNode));
+				P->data = ch;
+				P->lchild = P->rchild = nullptr;
+				if (T == nullptr)
+				{
+					// p指向二叉树的根结点
+					T = P;
+				}
+				else
+				{
+					switch (k)
+					{
+						case 1:
+							St[top]->lchild = P;
+							break;
+						case 2:
+							St[top]->rchild = P;
+							break;
+						default:
+							break;
+					}
+				}
 		}
-
 	}
 	return true;
 }
@@ -106,7 +147,7 @@ int countLeaves(BiTree &T)
 	return count;
 }
 
-bool PreOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType e))
+bool PreOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType))
 {
 	if (T)
 	{
@@ -125,7 +166,7 @@ bool PreOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType e))
 	return true;
 }
 
-bool PreOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType e))
+bool PreOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType))
 {
 	stack <BiTree> treeStack;
 	if (!T)
@@ -148,7 +189,7 @@ bool PreOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType e))
 	return true;
 }
 
-bool InOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType e))
+bool InOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType))
 {
 	if (T)
 	{
@@ -167,7 +208,7 @@ bool InOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType e))
 	return true;
 }
 
-bool InOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType e))
+bool InOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType))
 {
 	stack <BiTree> treeStack;
 	if (!T)
@@ -191,7 +232,7 @@ bool InOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType e))
 	return true;
 }
 
-bool PostOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType e))
+bool PostOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType))
 {
 	int flag[20];
 	stack <BiTree> treeStack;
@@ -227,7 +268,7 @@ bool PostOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType e))
 	return true;
 }
 
-bool PostOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType e))
+bool PostOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType))
 {
 	if (T)
 	{
@@ -246,21 +287,25 @@ bool PostOrderTraverse_recurse(BiTree &T, bool(*Visit)(TELemType e))
 	return true;
 }
 
-bool LevelOrderTraverse(BiTree T, bool(*Visit)(TELemType e))
+bool LevelOrderTraverse(BiTree T, bool(*Visit)(TELemType))
 {
-	queue<char> data;
-	while (T)
+	queue <BiTree> Q;
+	if (T != nullptr)
 	{
-		Visit(T->data);
-		if (T->lchild)
+		Q.push(T);
+		while (!Q.empty())
 		{
-			T = T->lchild;
-			data.push(T->data);
-		}
-		if (T->rchild)
-		{
-			T = T->rchild;
-			data.push(T->data);
+			if (T->lchild != nullptr)
+			{
+				Q.push(T->lchild);
+			}
+			if (T->rchild != nullptr)
+			{
+				Q.push(T->rchild);
+			}
+			Visit(Q.front()->data);
+			Q.pop();
+			T = Q.front();
 		}
 	}
 	return true;
