@@ -9,6 +9,7 @@ float Weight[26] = {
 		0.0013, 0.0042, 0.0339, 0.0249, 0.0707, 0.0797, 0.0199, 0.0012, 0.0677,
 		0.0607, 0.1045, 0.0249, 0.0092, 0.0149, 0.0017, 0.0199, 0.0008
 };
+
 /// 计算输入字符串不同字符的数量，并把各字符与权重对应起来
 /// \param input 输入的字符串
 /// \param weight 存储每个字符与对应的权重
@@ -48,6 +49,7 @@ int main()
 	int a;
 	cout << "请选择哈夫曼编码或者输入二叉树" << endl;
 	cin >> a;
+	getchar();
 	if (a == 1)
 	{
 		map<char, float> weight;
@@ -55,7 +57,7 @@ int main()
 		string input, password, output;
 
 		cout << "请输入字符串(请不要输入空格):" << endl;
-		cin >> input;
+		getline(cin, input);
 		int length = countAndGetWeight(input, weight);
 
 		Huffman hf(length, weight);

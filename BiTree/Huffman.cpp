@@ -88,7 +88,14 @@ string Huffman::concat(const string &input, map<char, string> &code)
 	string output;
 	for (auto i = input.begin(); i < input.end(); ++i)
 	{
-		output += code.find(*i)->second;
+		if (*i == ' ')
+		{
+			output += ' ';
+		}
+		else
+		{
+			output += code.find(*i)->second;
+		}
 	}
 	return output;
 }
@@ -101,6 +108,11 @@ string Huffman::decode(string &password)
 	{
 		switch (*i)
 		{
+			case ' ':
+			{
+				output += ' ';
+				break;
+			}
 			case '1':
 			{
 				k = hfTree[k].rightLink;
