@@ -16,15 +16,19 @@
 typedef struct BiTNode
 {
 	TELemType data{};
-	struct BiTNode *lchild{}, *rchild{};
+	struct BiTNode *lchild{};
+	struct BiTNode *rchild{};
 } BiTNode, *BiTree;
 
 bool CreateBiTreeInList(BiTree &T)
 {
 	string str;
 	cout << "请输入广义表" << endl;
-	cin >> str;
+	int a;
+	cin >> a;
 
+	getline(cin, str);
+	cout << str;
 	BiTNode *St[50], *P = nullptr;
 	int top = -1, k = 0;
 	char ch;
@@ -170,7 +174,7 @@ bool PreOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType))
 	stack <BiTree> treeStack;
 	if (!T)
 	{
-		printf("空树！\n");
+		cout << "空树!" << endl;
 		return false;
 	}
 	while (T || !treeStack.empty())
@@ -212,7 +216,7 @@ bool InOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType))
 	stack <BiTree> treeStack;
 	if (!T)
 	{
-		printf("空树！\n");
+		cout << "空树!" << endl;
 		return false;
 	}
 
@@ -237,7 +241,7 @@ bool PostOrderTraverse_loop(BiTree T, bool(*Visit)(TELemType))
 	stack <BiTree> treeStack;
 	if (!T)
 	{
-		printf("空树！\n");
+		cout << "空树!" << endl;
 		return false;
 	}
 	while (T)

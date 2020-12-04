@@ -3,4 +3,4 @@ project(BiTree)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(BiTree main.cpp SqBiTree.h LinkBiTree.h)
+add_executable(BiTree main.cpp SqBiTree.h LinkBiTree.h Huffman.h Huffman.cpp)
