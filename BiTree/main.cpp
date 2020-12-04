@@ -9,15 +9,20 @@ float Weight[26] = {
 		0.0013, 0.0042, 0.0339, 0.0249, 0.0707, 0.0797, 0.0199, 0.0012, 0.0677,
 		0.0607, 0.1045, 0.0249, 0.0092, 0.0149, 0.0017, 0.0199, 0.0008
 };
-
-int countAndGetWeight(const string &input, map<char, float> &weight)
+/// 计算输入字符串不同字符的数量，并把各字符与权重对应起来
+/// \param input 输入的字符串
+/// \param weight 存储每个字符与对应的权重
+/// \return 返回不同字符的数量
+int countAndGetWeight(string &input, map<char, float> &weight)
 {
+	//制表
 	int count = 0;
 	char num[26] = {0};
 	string temp;
 	temp.resize(input.size());
 	//转换成小写
 	transform(input.begin(), input.end(), temp.begin(), ::tolower);
+	input = temp;
 	for (auto i = temp.begin(); i < temp.end(); i++)
 	{
 		if ((*i) >= 97 && (*i) <= 122)
@@ -41,20 +46,24 @@ int countAndGetWeight(const string &input, map<char, float> &weight)
 int main()
 {
 	int a;
-	cout << "请选择输入二叉树或是哈夫曼编码" << endl;
+	cout << "请选择哈夫曼编码或者输入二叉树" << endl;
 	cin >> a;
 	if (a == 1)
 	{
 		map<char, float> weight;
 		map<char, string> code;
-		string input("abcd"), output;
-		cout << "请输入字符串" << endl;
+		string input, password, output;
+
+		cout << "请输入字符串(请不要输入空格):" << endl;
 		cin >> input;
 		int length = countAndGetWeight(input, weight);
+
 		Huffman hf(length, weight);
 		hf.encode(code);
-		string password = Huffman::concat(input, code);
+
+		password = Huffman::concat(input, code);
 		cout << password << endl;
+
 		output = hf.decode(password);
 		cout << output << endl;
 	}

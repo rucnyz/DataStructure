@@ -10,27 +10,25 @@
 Huffman::Huffman(int n, map<char, float> &weight) : length(n)
 {
 	int m = 2 * n - 1;
-	hfTree = (HuffmanTree) malloc(m * sizeof(HtNode));
 	// 为赫夫曼树分配一组顺序空间
+	hfTree = (HuffmanTree) malloc(m * sizeof(HtNode));
 	int i = 0;
 	auto p = hfTree;
-	auto w = weight.begin();
-	for (; i < n; ++i, ++p, ++w)
+	// 外部节点初始化，每个结点的左、右孩子为-1
+	for (auto w = weight.begin(); i < n; ++i, ++p, ++w)
 	{
 		*p = {(*w).second, 0, -1, -1, (*w).first};
 	}
-	// n个带权结点形成初始化的森林，每个结点的左、右孩子为空
+	// 内部节点初始化
 	for (; i < m; ++i, ++p)
 	{
 		*p = {0, 0, 0, 0, '\0'};
 	}
-	// 对尚未使用的结点赋初值
 	int s1, s2;
 	for (i = n; i < m; ++i)
 	{   // 建赫夫曼树
 		Select(hfTree, i, s1, s2);
-		// 在HT[1..i-1]当前可选的结点中选择parent为0，且权值
-		// 最小的两个结点，其序号分别为s1和s2。
+
 		hfTree[s1].parent = i;
 		hfTree[s2].parent = i;
 		hfTree[i].leftLink = s1;
@@ -38,6 +36,7 @@ Huffman::Huffman(int n, map<char, float> &weight) : length(n)
 		hfTree[i].weight = hfTree[s1].weight + hfTree[s2].weight;
 		// 取左、右子树根结点权值之和
 	}
+	//根节点parent为-1
 	hfTree[i - 1].parent = -1;
 	root = i - 1;
 }
@@ -84,10 +83,10 @@ void Huffman::Select(HuffmanTree tree, int i, int &s1, int &s2)
 	}
 }
 
-string Huffman::concat(const string &password, map<char, string> &code)
+string Huffman::concat(const string &input, map<char, string> &code)
 {
 	string output;
-	for (auto i = password.begin(); i < password.end(); ++i)
+	for (auto i = input.begin(); i < input.end(); ++i)
 	{
 		output += code.find(*i)->second;
 	}
@@ -124,30 +123,32 @@ string Huffman::decode(string &password)
 
 void Huffman::encode(map<char, string> &code)
 {
+	//栈中元素为当前索引与编码
 	stack<pair<int, string> > treeStack;
-	string binary;
+	//当前编码
+	string tempCode;
 	int i = root;
 	while (i != -1 || !treeStack.empty())
 	{
 		while (i != -1)
 		{
-			treeStack.push(make_pair(i, binary));
+			treeStack.push(make_pair(i, tempCode));
 			if (i >= 0 && i < length)
 			{
 				code.emplace(hfTree[i].ch, treeStack.top().second);
 			}
 			else
 			{
-				binary.push_back('0');
+				tempCode.push_back('0');
 			}
 
 			i = hfTree[i].leftLink;
 		}
 		i = treeStack.top().first;
-		binary = treeStack.top().second;
+		tempCode = treeStack.top().second;
 		treeStack.pop();
 		i = hfTree[i].rightLink;
-		binary.push_back('1');
+		tempCode.push_back('1');
 	}
 }
 
