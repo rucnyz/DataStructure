@@ -4,11 +4,11 @@
 #include "LinkBiTree.h"
 #include "Huffman.h"
 
-float Weight[26] = {
-		0.0856, 0.0139, 0.0297, 0.0378, 0.1304, 0.0289, 0.0199, 0.0528, 0.0627,
-		0.0013, 0.0042, 0.0339, 0.0249, 0.0707, 0.0797, 0.0199, 0.0012, 0.0677,
-		0.0607, 0.1045, 0.0249, 0.0092, 0.0149, 0.0017, 0.0199, 0.0008
-};
+//float Weight[26] = {
+//		0.0856, 0.0139, 0.0297, 0.0378, 0.1304, 0.0289, 0.0199, 0.0528, 0.0627,
+//		0.0013, 0.0042, 0.0339, 0.0249, 0.0707, 0.0797, 0.0199, 0.0012, 0.0677,
+//		0.0607, 0.1045, 0.0249, 0.0092, 0.0149, 0.0017, 0.0199, 0.0008
+//};
 
 /// 计算输入字符串不同字符的数量，并把各字符与权重对应起来
 /// \param input 输入的字符串
@@ -18,7 +18,7 @@ int countAndGetWeight(string &input, map<char, float> &weight)
 {
 	//制表
 	int count = 0;
-	char num[26] = {0};
+	char num[27] = {0};
 	string temp;
 	temp.resize(input.size());
 	//转换成小写
@@ -30,14 +30,23 @@ int countAndGetWeight(string &input, map<char, float> &weight)
 		{
 			num[(*i - 97)]++;
 		}
+		else
+		{
+			num[26]++;
+		}
 	}
 	int j = 0;
 	for (char i : num)
 	{
-		if (i != 0)
+		if (j == 26)
 		{
 			count++;
-			weight.emplace(j + 97, Weight[j]);
+			weight.emplace(' ', (int) i);
+		}
+		else if (i != 0)
+		{
+			count++;
+			weight.emplace(j + 97, (int) i);
 		}
 		j++;
 	}
@@ -56,7 +65,7 @@ int main()
 		map<char, string> code;
 		string input, password, output;
 
-		cout << "请输入字符串(请不要输入空格):" << endl;
+		cout << "请输入你的信息:" << endl;
 		getline(cin, input);
 		int length = countAndGetWeight(input, weight);
 

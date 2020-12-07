@@ -48,8 +48,8 @@ Huffman::Huffman() : root(0), length(0), hfTree(nullptr)
 
 void Huffman::Select(HuffmanTree tree, int i, int &s1, int &s2)
 {
-	float s1Weight = 1.0;
-	float s2Weight = 1.1;
+	float s1Weight = 100;
+	float s2Weight = 110;
 	for (int j = 0; j < i; ++j)
 	{
 		if (tree[j].parent != 0)
@@ -88,14 +88,7 @@ string Huffman::concat(const string &input, map<char, string> &code)
 	string output;
 	for (auto i = input.begin(); i < input.end(); ++i)
 	{
-		if (*i == ' ')
-		{
-			output += ' ';
-		}
-		else
-		{
-			output += code.find(*i)->second;
-		}
+		output += code.find(*i)->second;
 	}
 	return output;
 }
@@ -104,15 +97,21 @@ string Huffman::decode(string &password)
 {
 	int k = root;
 	string output;
+	if (k == 0)
+	{
+		for (auto i = password.begin(); i < password.end(); ++i)
+		{
+			if (*i == '0')
+			{
+				output += hfTree[k].ch;
+			}
+		}
+		return output;
+	}
 	for (auto i = password.begin(); i < password.end(); ++i)
 	{
 		switch (*i)
 		{
-			case ' ':
-			{
-				output += ' ';
-				break;
-			}
 			case '1':
 			{
 				k = hfTree[k].rightLink;
@@ -140,6 +139,11 @@ void Huffman::encode(map<char, string> &code)
 	//当前编码
 	string tempCode;
 	int i = root;
+	if (i == 0)
+	{
+		code.emplace(hfTree[i].ch, "0");
+		return;
+	}
 	while (i != -1 || !treeStack.empty())
 	{
 		while (i != -1)
