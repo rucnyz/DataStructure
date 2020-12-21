@@ -6,10 +6,8 @@
  * @Software: CLion
  */
 #include "DataLoader.h"
-Flight flight[2350];
-int Flight::totalFlightNum = 0;
 
-void HandleOriginData(const string &path)
+void HandleOriginData(const string &path, ALGraph &graph)
 {
 	Flight::totalFlightNum = 0;
 	ifstream data;
@@ -24,7 +22,7 @@ void HandleOriginData(const string &path)
 	getline(data, line);
 	while (getline(data, line))   //整行读取，换行符“\n”区分，遇到文件尾标志eof终止读取
 	{
-		istringstream sin(line); //将整行字符串line读入到字符串流istringstream中
+		istringstream sin(line); //将整行字符串line读入到字符串流sin中
 		vector<string> fields; //声明一个字符串向量
 		string field;
 		while (getline(sin, field, ',')) //将字符串流sin中的字符读入到field字符串中，以逗号为分隔符
@@ -35,35 +33,35 @@ void HandleOriginData(const string &path)
 		temp << fields[0];
 		temp >> id;
 		temp.clear();
-		flight[id].flightId = id;
-		flight[id].departureDate = fields[1];
+		graph.flight[id].flightId = id;
+		graph.flight[id].departureDate = fields[1];
 		if (fields[2] == "Intl")
 		{
-			flight[id].intlorDome = false;
+			graph.flight[id].intlOrDome = false;
 		}
 		else
 		{
-			flight[id].intlorDome = true;
+			graph.flight[id].intlOrDome = true;
 		}
 		temp << fields[3];
-		temp >> flight[id].flightNo;
+		temp >> graph.flight[id].flightNo;
 		temp.clear();
 		temp << fields[4];
-		temp >> flight[id].departureAirport;
+		temp >> graph.flight[id].departureAirport;
 		temp.clear();
 		temp << fields[5];
-		temp >> flight[id].arrivalAirport;
+		temp >> graph.flight[id].arrivalAirport;
 		temp.clear();
-		flight[id].departureTime = fields[6];
-		flight[id].arrivalTime = fields[7];
+		graph.flight[id].departureTime = fields[6];
+		graph.flight[id].arrivalTime = fields[7];
 		temp << fields[8];
-		temp >> flight[id].airplaneId;
+		temp >> graph.flight[id].airplaneId;
 		temp.clear();
 		temp << fields[9];
-		temp >> flight[id].airplaneModel;
+		temp >> graph.flight[id].airplaneModel;
 		temp.clear();
 		temp << fields[10];
-		temp >> flight[id].airFares;
+		temp >> graph.flight[id].airFares;
 		temp.clear();
 	}
 	Flight::totalFlightNum = id;

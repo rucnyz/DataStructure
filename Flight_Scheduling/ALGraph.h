@@ -8,8 +8,30 @@
 #ifndef FLIGHT_SCHEDULING_GRAPH_H
 #define FLIGHT_SCHEDULING_GRAPH_H
 
-#include "DataLoader.h"
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <queue>
+#include <stack>
 
+using namespace std;
+typedef struct Flight
+{
+	static int totalFlightNum;
+	[[maybe_unused]] bool intlOrDome{};
+	[[maybe_unused]] int flightId{};
+	int flightNo{};
+	int departureAirport{};
+	int arrivalAirport{};
+	int airplaneId{};
+	int airplaneModel{};
+	int airFares{};
+	string departureTime{};
+	string arrivalTime{};
+	[[maybe_unused]] string departureDate{};
+} Flight_Arr[2350];   //从1开始
 typedef struct ArcNode
 {
 	int adjVex{};   //该弧所指向的顶点的位置，也就是机场在数组中的位置
@@ -21,18 +43,63 @@ typedef struct VNode
 {
 	ArcNode *firstArc;
 } AdjList[80];   //一共79个机场
+
+
+struct MultiArcNode
+{
+	int startVex{};
+	int targetVex{};
+	int times{};
+	int pathVex{};
+};
+
 class ALGraph
 {
 public:
-	explicit ALGraph();
+	void Create();
 
-	void DFS(int v);
+	void DFS(int departure, int arrival, int opId);
 
-	AdjList vertices{};   //所有顶点
-	int vexNum = 0, arcNum = 0;   //图的当前顶点数和弧数
+	void BFS(int v);
+
+	friend void HandleOriginData(const string &path, ALGraph &graph);
+
+	AdjList vertices{}; //所有顶点
+	MultiArcNode edge[80][80]{}; //邻接矩阵
+	int vexNum = 0, arcNum = 0; //图的当前顶点数和弧数
+
 private:
-	static bool compareTime(const string &prior, const string &next);
+	Flight_Arr flight;
 
+	static bool compareTime(const string &prior, const string &next);
+	static string timeDifference(const string &prior, const string &next);
+	void findAllPath(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
+	                 vector<string> &output);
+	void DFS_recurse(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
+	                 vector<string> &output);
+
+	void BFS_recurse(int v, ArcNode *p, string &priorArrivalTime, bool *visited, vector<string> &output);
+
+	static inline void Display(vector<string> &output)
+	{
+		for (auto i = output.begin(); i < output.end(); ++i)
+		{
+			cout << *i << endl;
+		}
+		cout<<"======================"<<endl;
+	}
+
+	void CreateMatrix(vector<string> &output);
+	///
+	/// \param departure
+	/// \param arrival
+	/// \param p
+	/// \param priorArrivalTime
+	/// \param visited
+	/// \param output
+	/// \param time 每两位断开，从左往右代表日、小时、分钟
+	void findLeastCost(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
+	                   vector<string> &output, string &time, string &startTime);
 };
 
 
