@@ -104,6 +104,7 @@ void ALGraph::DFS(int departure, int arrival, int opId)
 	{
 		static string leastTime = "999999";
 		string a;
+
 		for (int i = 0; i <= p->num; ++i)
 		{
 			if (compareTime(flight[p->flightID[i]].departureTime, a))
@@ -115,6 +116,7 @@ void ALGraph::DFS(int departure, int arrival, int opId)
 		findLeastCost(departure, arrival, p, priorArrivalTime, visited, output, leastTime,
 		              a);
 		cout << leastTime << endl;
+		leastTime = "999999";
 	}
 	else
 	{
@@ -148,10 +150,10 @@ bool ALGraph::compareTime(const string &prior, const string &next)
 void ALGraph::findAllPath(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
                           vector<string> &output)
 {
-//	if (output.size() > 10)
-//	{
-//		return;
-//	}
+	if (output.size() > 2)
+	{
+		return;
+	}
 	while (p)
 	{
 		if (visited[p->adjVex])
@@ -202,7 +204,7 @@ void ALGraph::findAllPath(int departure, int arrival, ArcNode *p, string &priorA
 void ALGraph::findLeastCost(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
                             vector<string> &output, string &time, string &startTime)
 {
-	if (output.size()>4)
+	if (output.size() > 5)
 	{
 		return;
 	}
@@ -215,6 +217,7 @@ void ALGraph::findLeastCost(int departure, int arrival, ArcNode *p, string &prio
 		}
 		//找到最早到达且时间在上一航班之后的航班
 		string minArrivalTime;
+		int j = 0;
 		for (int i = 0; i <= p->num; ++i)
 		{
 			// 离开时间晚于上一个到达时间
@@ -222,11 +225,16 @@ void ALGraph::findLeastCost(int departure, int arrival, ArcNode *p, string &prio
 			    compareTime(flight[p->flightID[i]].arrivalTime, minArrivalTime))
 			{
 				minArrivalTime = flight[p->flightID[i]].arrivalTime;
+				j = i;
 			}
 		}
 		//找到了航班
 		if (!minArrivalTime.empty())
 		{
+			if (output.empty())
+			{
+				startTime = flight[p->flightID[j]].departureTime;
+			}
 			//时间长于已找到的,后面的不再遍历
 			if (time != "999999" && time < timeDifference(startTime, minArrivalTime))
 			{
@@ -326,6 +334,10 @@ void ALGraph::CreateMatrix(vector<string> &output)
 
 }
 
+/// 求时间差
+/// \param prior
+/// \param next
+/// \return 时间差字符串
 string ALGraph::timeDifference(const string &prior, const string &next)
 {
 	string result;
