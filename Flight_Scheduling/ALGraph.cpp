@@ -105,14 +105,14 @@ void ALGraph::DFS(int departure, int arrival, int opId)
 		static string leastTime = "999999";
 		string a;
 
-		for (int i = 0; i <= p->num; ++i)
-		{
-			if (compareTime(flight[p->flightID[i]].departureTime, a))
-			{
-				a = flight[p->flightID[i]].departureTime;
-			}
-
-		}
+//		for (int i = 0; i <= p->num; ++i)
+//		{
+//			if (compareTime(flight[p->flightID[i]].departureTime, a))
+//			{
+//				a = flight[p->flightID[i]].departureTime;
+//			}
+//		}
+		a = flight[p->flightID[0]].departureTime;
 		findLeastCost(departure, arrival, p, priorArrivalTime, visited, output, leastTime,
 		              a);
 		cout << leastTime << endl;
@@ -204,7 +204,8 @@ void ALGraph::findAllPath(int departure, int arrival, ArcNode *p, string &priorA
 void ALGraph::findLeastCost(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
                             vector<string> &output, string &time, string &startTime)
 {
-	if (output.size() > 5)
+	static int j = 1;
+	if (output.size() > 4)
 	{
 		return;
 	}
@@ -212,33 +213,68 @@ void ALGraph::findLeastCost(int departure, int arrival, ArcNode *p, string &prio
 	{
 		if (visited[p->adjVex])
 		{
-			p = p->nextArc;
+			if (output.empty() && (j != p->num + 1))
+			{
+				startTime = flight[p->flightID[j]].departureTime;
+				j++;
+			}
+			else if (output.empty() && (j == p->num + 1))
+			{
+				p = p->nextArc;
+				if (p)
+				{
+					startTime = flight[p->flightID[0]].departureTime;
+				}
+				j = 1;
+			}
+			else
+			{
+				p = p->nextArc;
+			}
 			continue;
 		}
 		//找到最早到达且时间在上一航班之后的航班
 		string minArrivalTime;
-		int j = 0;
-		for (int i = 0; i <= p->num; ++i)
+		if (output.empty())
 		{
-			// 离开时间晚于上一个到达时间
-			if (compareTime(priorArrivalTime, flight[p->flightID[i]].departureTime) &&
-			    compareTime(flight[p->flightID[i]].arrivalTime, minArrivalTime))
+			minArrivalTime = flight[p->flightID[j-1]].arrivalTime;
+		}
+		else
+		{
+			for (int i = 0; i <= p->num; ++i)
 			{
-				minArrivalTime = flight[p->flightID[i]].arrivalTime;
-				j = i;
+				// 离开时间晚于上一个到达时间
+				if (compareTime(priorArrivalTime, flight[p->flightID[i]].departureTime) &&
+				    compareTime(flight[p->flightID[i]].arrivalTime, minArrivalTime))
+				{
+					minArrivalTime = flight[p->flightID[i]].arrivalTime;
+				}
 			}
 		}
 		//找到了航班
 		if (!minArrivalTime.empty())
 		{
-			if (output.empty())
-			{
-				startTime = flight[p->flightID[j]].departureTime;
-			}
 			//时间长于已找到的,后面的不再遍历
 			if (time != "999999" && time < timeDifference(startTime, minArrivalTime))
 			{
-				p = p->nextArc;
+				if (output.empty() && (j != p->num + 1))
+				{
+					startTime = flight[p->flightID[j]].departureTime;
+					j++;
+				}
+				else if (output.empty() && (j == p->num + 1))
+				{
+					p = p->nextArc;
+					if (p)
+					{
+						startTime = flight[p->flightID[0]].departureTime;
+					}
+					j = 1;
+				}
+				else
+				{
+					p = p->nextArc;
+				}
 				continue;
 			}
 			visited[p->adjVex] = true;
@@ -268,7 +304,24 @@ void ALGraph::findLeastCost(int departure, int arrival, ArcNode *p, string &prio
 			visited[p->adjVex] = false;
 			output.pop_back();
 		}
-		p = p->nextArc;
+		if (output.empty() && (j != p->num + 1))
+		{
+			startTime = flight[p->flightID[j]].departureTime;
+			j++;
+		}
+		else if (output.empty() && (j == p->num + 1))
+		{
+			p = p->nextArc;
+			if (p)
+			{
+				startTime = flight[p->flightID[0]].departureTime;
+			}
+			j = 1;
+		}
+		else
+		{
+			p = p->nextArc;
+		}
 	}
 }
 
