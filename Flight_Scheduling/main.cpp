@@ -9,13 +9,19 @@ int main()
 	HandleOriginData(input, graph);// flight[2500]
 	graph.Create();
 //	graph.DFS(1, 49, 2);
-//	cout << "广度优先搜索" << endl;
-//	graph.BFS(1);
+	cout << "是否进行广度优先搜索？" << endl;
+	int s = 0;
+	cin >> s;
+	if (s == 1)
+	{
+		cout << "广度优先搜索:" << endl;
+		graph.BFS(1);
+	}
+	cout << "欢迎使用航班查询系统v1.0!" << endl;
 	while (flag)
 	{
 		int start, end;
 		string id;
-		cout << "欢迎使用航班查询系统v1.0!" << endl;
 		cout << "请输入您想要查询的两个机场编号：" << endl;
 		cin >> start >> end;
 		cout << "请选择您想要进行的操作：" << endl;
@@ -38,6 +44,7 @@ int main()
 			}
 			case '3':
 			{
+				graph.DFS(start, end, 3);
 				break;
 			}
 			case 'q':

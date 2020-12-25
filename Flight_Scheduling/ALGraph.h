@@ -13,15 +13,17 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <list>
 #include <queue>
 #include <stack>
+#include <cstring>
 
 using namespace std;
 typedef struct Flight
 {
 	static int totalFlightNum;
-	[[maybe_unused]] bool intlOrDome{};
-	[[maybe_unused]] int flightId{};
+	bool intlOrDome{};
+	int flightId{};
 	int flightNo{};
 	int departureAirport{};
 	int arrivalAirport{};
@@ -30,7 +32,7 @@ typedef struct Flight
 	int airFares{};
 	string departureTime{};
 	string arrivalTime{};
-	[[maybe_unused]] string departureDate{};
+	string departureDate{};
 } Flight_Arr[2350];   //从1开始
 typedef struct ArcNode
 {
@@ -49,8 +51,7 @@ struct MultiArcNode
 {
 	int startVex{};
 	int targetVex{};
-	int times{};
-	int pathVex{};
+	list<pair<int, list<int> > > pathVex{};
 };
 
 class ALGraph
@@ -64,32 +65,48 @@ public:
 
 	friend void HandleOriginData(const string &path, ALGraph &graph);
 
+	friend vector<string> split(const string &str, const string &delim);
+
 	AdjList vertices{}; //所有顶点
-	MultiArcNode edge[80][80]{}; //邻接矩阵
+	int edge[80][80]{}; //邻接矩阵
 	int vexNum = 0, arcNum = 0; //图的当前顶点数和弧数
 
 private:
 	Flight_Arr flight;
 
+	///
+	/// \param prior
+	/// \param next
+	/// \return 后一时间晚于前一时间
 	static bool compareTime(const string &prior, const string &next);
+
+	/// 求时间差
+	/// \param prior
+	/// \param next
+	/// \return 时间差字符串
 	static string timeDifference(const string &prior, const string &next);
+
 	void findAllPath(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
 	                 vector<string> &output);
+
 	void DFS_recurse(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
 	                 vector<string> &output);
 
-	void BFS_recurse(int v, ArcNode *p, string &priorArrivalTime, bool *visited, vector<string> &output);
-
 	static inline void Display(vector<string> &output)
 	{
+		if (output.empty())
+		{
+			cout << "无符合条件的航班！" << endl;
+		}
 		for (auto i = output.begin(); i < output.end(); ++i)
 		{
 			cout << *i << endl;
 		}
-		cout<<"======================"<<endl;
+		cout << "======================" << endl;
 	}
 
 	void CreateMatrix(vector<string> &output);
+
 	///
 	/// \param departure
 	/// \param arrival
@@ -100,6 +117,12 @@ private:
 	/// \param time 每两位断开，从左往右代表日、小时、分钟
 	void findLeastCost(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
 	                   vector<string> &output, string &time, string &startTime);
+
+	void findPathInCondition(string &model, string &departureTime1, string &departureTime2, string &arrivalTime1,
+	                         string &arrivalTime2, string &transferTime, list<MultiArcNode> &path);
+
+	void findAllPath2(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
+	                  vector<string> &eachPath, list<MultiArcNode> &allPath);
 };
 
 
