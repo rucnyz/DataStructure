@@ -16,7 +16,7 @@ vector<string> split(const string &str, const string &delim)
 		return res;
 	}
 	//先将要切割的字符串从string类型转换为char*类型
-	char *c_str = new char[str.length() + 1]; //不要忘了
+	char *c_str = new char[str.length() + 1];
 	strcpy(c_str, str.c_str());
 
 	char *d = new char[delim.length() + 1];

@@ -41,7 +41,7 @@ typedef struct ArcNode
 {
 	int adjVex{};   // 该弧所指向的顶点的位置，也就是机场在数组中的位置
 	struct ArcNode *nextArc{};   // 指向下一条弧的指针
-	int flightID[34]{};   // 所有连接这两点的弧对应的航班编号，因为同一航线可能有多个航班
+	int flightID[34]{};   // 所有连接这两点的弧对应的航班编号，因为同一航线可能有多个航班，从0开始
 	int num{};   // 这条航线有多少航班
 } ArcNode;
 // 存储顶点(机场)
@@ -62,9 +62,9 @@ struct MultiArcNode
 class ALGraph
 {
 public:
-	AdjList vertices{}; //所有顶点
-	int edge[80][80]{}; //邻接矩阵
-	int vexNum = 0, arcNum = 0; //图的当前顶点数和弧数
+	AdjList vertices{}; // 所有顶点
+	int edge[80][80]{}; // 邻接矩阵
+	int vexNum = 0, arcNum = 0; // 图的当前顶点数和弧数
 
 	void Create();
 
@@ -86,19 +86,19 @@ public:
 	// 分割字符串
 	friend vector<string> split(const string &str, const string &delim);
 
-	// 使用邻接矩阵计算连通性,O(n3)
+	// 使用邻接矩阵计算连通性，O(n3)
 	void floyd();
 
 private:
 	Flight_Arr flight; //所有航班
 
-	// 用于比较时间 后一时间晚于前一时间返回true
+	// 用于比较时间，后一时间晚于前一时间返回true
 	static bool compareTime(const string &prior, const string &next);
 
 	// 求时间差，时间差字符串为每两位断开，从左往右代表日、小时、分钟
 	static string timeDifference(const string &prior, const string &next);
 
-	// 用于找到两个机场之间的所有可行路径,存在output中并输出
+	// 用于找到两个机场之间的所有可行路径，存在output中并输出
 	void findAllPathForOutput(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
 	                          vector<string> &output);
 
@@ -123,7 +123,7 @@ private:
 	// (已废除)创建邻接矩阵
 	void CreateMatrix(vector<string> &output);
 
-	// 用于找到两个机场之间的所有可行路径,并从中找到时间最短的路径
+	// 用于找到两个机场之间的所有可行路径，并从中找到时间最短的路径
 	void findLeastTime(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
 	                   vector<string> &output, string &time, string &startTime);
 
