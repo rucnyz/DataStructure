@@ -123,11 +123,11 @@ void ALGraph::mainFunc(int departure, int arrival, int opId)
 	ArcNode *p = vertices[departure].firstArc;
 	vector<string> output;
 	visited[departure] = true;
-	if (opId == 0)
+	if (opId == 1)
 	{
 		cout << "中转次数:" << edge[departure][arrival] - 1 << endl;
 	}
-	else if (opId == 1)
+	else if (opId == 2)
 	{
 		static string leastTime = "999999";
 		string a;
@@ -138,7 +138,7 @@ void ALGraph::mainFunc(int departure, int arrival, int opId)
 		cout << leastTime << endl;
 		leastTime = "999999";
 	}
-	else if (opId == 2)
+	else if (opId == 3)
 	{
 		findAllPath(departure, arrival, p, priorArrivalTime, visited, output);
 	}
