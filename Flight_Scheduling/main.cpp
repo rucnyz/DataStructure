@@ -8,18 +8,18 @@ int main()
 	string input = R"(C:\Users\nieyuzhou\CLionProjects\DataStructure\Flight_Scheduling\flight_data.csv)";
 	HandleOriginData(input, graph);// flight[2500]
 	graph.Create();
-	graph.Floyd();
-//  搜索不在系统之中
-//	cout << "是否进行优先搜索？" << endl;
-//	int s = 0;
-//	cin >> s;
-//	if (s == 1)
-//	{
-//		cout << "广度优先搜索:" << endl;
-//		graph.BFS(56);
-//		cout << "深度优先搜索:" << endl;
-//		graph.DFS(23);
-//	}
+	graph.floyd();
+	// 搜索不在系统之中
+	cout << "请问您是否进行优先搜索？(y/n)" << endl;
+	char s;
+	cin >> s;
+	if (s == 'y')
+	{
+		cout << "广度优先搜索:" << endl;
+		graph.BFS(56);
+		cout << "深度优先搜索:" << endl;
+		graph.DFS(23);
+	}
 	cout << "欢迎使用航班查询系统v1.0!" << endl;
 	while (flag)
 	{
@@ -38,7 +38,7 @@ int main()
 			cout << "请选择您想要进行的操作：" << endl;
 			cout << "    输入1查询两个机场之间的中转次数" << endl;
 			cout << "    输入2查询两个机场之间的最短飞行时间" << endl;
-			cout << "    输入3查询两个机场之间的所有可能航线(仅限直飞或两次中转以内)" << endl;
+			cout << "    输入3查询两个机场之间的所有可能航线(仅限直飞或一次中转)" << endl;
 			cout << "    输入4进行条件查询" << endl;
 			cout << "    输入0退出系统" << endl;
 			cin >> id;
@@ -60,13 +60,19 @@ int main()
 				case 4:
 				{
 					graph.mainFunc(start, end, idx);
-					isError = false;
+					cout << "请问您是否继续查询?(y/n)" << endl;
+					string str;
+					getchar();
+					getline(cin, str);
+					if (str == "n")
+					{
+						isError = false;
+					}
 					break;
 				}
 				case 0:
 				{
-					flag = false;
-					isError = false;
+					flag = isError = false;
 					break;
 				}
 				default:
