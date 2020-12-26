@@ -15,6 +15,10 @@ void ALGraph::Create()
 	for (int i = 1; i <= this->vexNum; i++)
 	{   //初始化顶点信息
 		vertices[i].firstArc = nullptr;
+		for (int j = 1; j <= this->vexNum; ++j)
+		{
+			edge[i][j] = 100;
+		}
 	}
 	//用航班信息建立邻接表
 	for (int id = 1; id <= arcNum; id++)
@@ -22,6 +26,7 @@ void ALGraph::Create()
 		int i, j;
 		i = flight[id].departureAirport;
 		j = flight[id].arrivalAirport;
+		edge[i][j] = 1;
 		//邻接表
 		ArcNode *p = vertices[i].firstArc;
 		while (p)
@@ -52,14 +57,16 @@ void ALGraph::Create()
 
 void ALGraph::BFS(int v)
 {
-	queue<pair<int, string> > S;
+	queue<int> S;
 	string chain;
-	S.push(make_pair(v, ""));
+	S.push(v);
 	bool visited[80] = {false};
+	int count = 1;
+	cout << v << " " << count << endl;
+	visited[v] = true;
 	while (!S.empty())
 	{
-		int t = S.front().first;
-		string priorArrivalTime = S.front().second;
+		int t = S.front();
 		S.pop();
 		ArcNode *p = vertices[t].firstArc;
 		while (p)
@@ -69,30 +76,46 @@ void ALGraph::BFS(int v)
 				p = p->nextArc;
 				continue;
 			}
-			//找到最早到达且时间在上一航班之后的航班
-			string minArrivalTime;
-			for (int i = 0; i <= p->num; ++i)
-			{
-				if (compareTime(priorArrivalTime, flight[p->flightID[i]].departureTime) &&
-				    compareTime(flight[p->flightID[i]].arrivalTime, minArrivalTime)) // 离开时间晚于上一个到达时间
-				{
-					minArrivalTime = flight[p->flightID[i]].arrivalTime;
-				}
-			}
-			S.push(make_pair(p->adjVex, minArrivalTime));
+			S.push(p->adjVex);
 			visited[p->adjVex] = true;
-			if (!minArrivalTime.empty())
-			{
-				static int count = 0;
-				count++;
-				cout << p->adjVex << " " << minArrivalTime << " " << count << endl;
-			}
+			count++;
+			cout << p->adjVex << " " << count << endl;
 			p = p->nextArc;
 		}
 	}
 }
 
-void ALGraph::DFS(int departure, int arrival, int opId)
+void ALGraph::DFS(int v)
+{
+	stack<int> S;
+	string chain;
+	S.push(v);
+	bool visited[80] = {false};
+	int count = 1;
+	cout << v << " " << count << endl;
+	visited[v] = true;
+	while (!S.empty())
+	{
+		int t = S.top();
+		S.pop();
+		ArcNode *p = vertices[t].firstArc;
+		while (p)
+		{
+			if (visited[p->adjVex])
+			{
+				p = p->nextArc;
+				continue;
+			}
+			S.push(p->adjVex);
+			visited[p->adjVex] = true;
+			count++;
+			cout << p->adjVex << " " << count << endl;
+			p = p->nextArc;
+		}
+	}
+}
+
+void ALGraph::mainFunc(int departure, int arrival, int opId)
 {
 
 	bool visited[80] = {false};
@@ -100,7 +123,11 @@ void ALGraph::DFS(int departure, int arrival, int opId)
 	ArcNode *p = vertices[departure].firstArc;
 	vector<string> output;
 	visited[departure] = true;
-	if (opId == 1)
+	if (opId == 0)
+	{
+		cout << "中转次数:" << edge[departure][arrival] - 1 << endl;
+	}
+	else if (opId == 1)
 	{
 		static string leastTime = "999999";
 		string a;
@@ -125,18 +152,35 @@ void ALGraph::DFS(int departure, int arrival, int opId)
 		cout << "departure time(e.g:5/5/2017 16:55):" << endl;
 		cout << "最早时间:";
 		getline(cin, departureTime1);
+		if (departureTime1 == "no")
+		{
+			departureTime1.clear();
+		}
 		cout << "最晚时间:";
 		getline(cin, departureTime2);
+		if (departureTime2 == "no")
+		{
+			departureTime2.clear();
+		}
 		cout << "arrival time(e.g:5/5/2017 16:55):" << endl;
 		cout << "最早时间:";
 		getline(cin, arrivalTime1);
+		if (arrivalTime1 == "no")
+		{
+			arrivalTime1.clear();
+		}
 		cout << "最晚时间:";
 		getline(cin, arrivalTime2);
+		if (arrivalTime2 == "no")
+		{
+			arrivalTime2.clear();
+		}
 		cout << "transfer time(e.g:010101,前两位表示天，中间两位表示时，后两位表示分钟):" << endl;
 		cout << "最大时间:";
 		getline(cin, transferTime);
 		static list<MultiArcNode> path;
 		findAllPath2(departure, arrival, p, priorArrivalTime, visited, output, path);
+
 		findPathInCondition(model, departureTime1, departureTime2, arrivalTime1, arrivalTime2, transferTime, path);
 	}
 }
@@ -366,11 +410,13 @@ vector<string> split(const string &str, const string &delim)
 void ALGraph::findPathInCondition(string &model, string &departureTime1, string &departureTime2, string &arrivalTime1,
                                   string &arrivalTime2, string &transferTime, list<MultiArcNode> &path)
 {
+	int cheapestCost = INT32_MAX;
+	string cheapestAirline;
 	vector<string> output;
 	for (auto &i : path)
 	{
 		//判断起飞时段
-		if (departureTime1 != "no" && departureTime2 != "no")
+		if (!departureTime1.empty() || !departureTime2.empty())
 		{
 			auto j = i.pathVex.front().second.begin();
 			while (j != i.pathVex.front().second.end())
@@ -406,7 +452,7 @@ void ALGraph::findPathInCondition(string &model, string &departureTime1, string 
 			}
 		}
 		//判断到达时段
-		if (arrivalTime1 != "no" && arrivalTime2 != "no")
+		if (!arrivalTime1.empty() || !arrivalTime2.empty())
 		{
 			auto j = i.pathVex.back().second.begin();
 			while (j != i.pathVex.back().second.end())
@@ -434,14 +480,27 @@ void ALGraph::findPathInCondition(string &model, string &departureTime1, string 
 					{
 						stringstream os;
 						string temp;
+						//路径
 						os << i.startVex << "->" << i.pathVex.begin()->first << "->" << i.targetVex;
 						os >> temp;
 						output.push_back(temp);
+						//航班
 						temp.clear();
 						os.clear();
 						os << *j << "->" << *k;
 						os >> temp;
 						output.push_back(temp);
+						//分割符
+						temp.clear();
+						os.clear();
+						os << "====================";
+						os >> temp;
+						output.push_back(temp);
+						if ((flight[*j].airFares + flight[*k].airFares) < cheapestCost)
+						{
+							cheapestCost = flight[*j].airFares + flight[*k].airFares;
+							cheapestAirline = to_string(*j) + "->" + to_string(*k);
+						}
 					}
 
 				}
@@ -449,12 +508,13 @@ void ALGraph::findPathInCondition(string &model, string &departureTime1, string 
 		}
 	}
 	Display(output);
+	cout << endl << "最低花费:" << cheapestCost << endl;
+	cout << "航班:" << cheapestAirline << endl;
 	path.clear();
 }
 
 void ALGraph::findAllPath2(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
-                           vector<string> &eachPath,
-                           list<MultiArcNode> &allPath)
+                           vector<string> &eachPath, list<MultiArcNode> &allPath)
 {
 	if (eachPath.size() > 1)
 	{
@@ -524,6 +584,7 @@ void ALGraph::findAllPath2(int departure, int arrival, ArcNode *p, string &prior
 void ALGraph::DFS_recurse(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
                           vector<string> &output)
 {
+
 	while (p)
 	{
 		if (visited[p->adjVex])
@@ -619,4 +680,18 @@ string ALGraph::timeDifference(const string &prior, const string &next)
 	}
 
 	return result;
+}
+
+void ALGraph::Floyd()
+{
+	for (int k = 1; k <= vexNum; k++)
+	{
+		for (int i = 1; i <= vexNum; i++)
+		{
+			for (int j = 1; j <= vexNum; j++)
+			{
+				edge[i][j] = min(edge[i][j], edge[i][k] + edge[k][j]);
+			}
+		}
+	}
 }

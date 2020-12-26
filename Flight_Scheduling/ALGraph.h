@@ -59,9 +59,11 @@ class ALGraph
 public:
 	void Create();
 
-	void DFS(int departure, int arrival, int opId);
+	void mainFunc(int departure, int arrival, int opId);
 
 	void BFS(int v);
+
+	void DFS(int v);
 
 	friend void HandleOriginData(const string &path, ALGraph &graph);
 
@@ -70,6 +72,8 @@ public:
 	AdjList vertices{}; //所有顶点
 	int edge[80][80]{}; //邻接矩阵
 	int vexNum = 0, arcNum = 0; //图的当前顶点数和弧数
+
+	void Floyd();
 
 private:
 	Flight_Arr flight;
@@ -123,6 +127,7 @@ private:
 
 	void findAllPath2(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
 	                  vector<string> &eachPath, list<MultiArcNode> &allPath);
+
 };
 
 
