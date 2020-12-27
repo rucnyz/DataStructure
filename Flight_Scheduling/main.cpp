@@ -62,7 +62,7 @@ int main()
 					graph.mainFunc(start, end, idx);
 					cout << "请问您是否继续查询?(y/n)" << endl;
 					string str;
-					getchar();
+
 					getline(cin, str);
 					if (str == "n")
 					{

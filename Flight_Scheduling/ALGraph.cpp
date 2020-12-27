@@ -231,7 +231,7 @@ void ALGraph::findAllPathForConditionSearch(int departure, int arrival, ArcNode 
 void ALGraph::findAllPathForOutput(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
                                    vector<string> &output)
 {
-	if (output.size() > 1)
+	if (output.size() > 4)
 	{
 		return;
 	}
@@ -372,9 +372,10 @@ void ALGraph::findLeastTime(int departure, int arrival, ArcNode *p, string &prio
 			if (p->adjVex == arrival)
 			{
 				string tmp = timeDifference(startTime, minArrivalTime);
-				if (time > tmp)
+				if (time >= tmp)
 				{
 					time = tmp;
+
 				}
 			}
 			else
@@ -537,9 +538,11 @@ void ALGraph::mainFunc(int departure, int arrival, int opId)
 	if (opId == 1)
 	{
 		cout << "中转次数:" << edge[departure][arrival] - 1 << endl;
+		getchar();
 	}
 	else if (opId == 2)
 	{
+		getchar();
 		static string leastTime = "999999";
 		string a;
 
@@ -551,6 +554,7 @@ void ALGraph::mainFunc(int departure, int arrival, int opId)
 	}
 	else if (opId == 3)
 	{
+		getchar();
 		findAllPathForOutput(departure, arrival, p, priorArrivalTime, visited, output);
 	}
 	else
@@ -593,6 +597,7 @@ void ALGraph::mainFunc(int departure, int arrival, int opId)
 		findAllPathForConditionSearch(departure, arrival, p, priorArrivalTime, visited, output, path);
 
 		findPathInCondition(model, departureTime1, departureTime2, arrivalTime1, arrivalTime2, transferTime, path);
+
 	}
 }
 
