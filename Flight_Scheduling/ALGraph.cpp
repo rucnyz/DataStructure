@@ -162,7 +162,7 @@ void ALGraph::DFS(int v)
 void ALGraph::findAllPathForConditionSearch(int departure, int arrival, ArcNode *p, string &priorArrivalTime,
                                             bool *visited, vector<string> &eachPath, list<MultiArcNode> &allPath)
 {
-	if (eachPath.size() > 1)
+	if (eachPath.size() > 4)
 	{
 		return;
 	}
@@ -283,9 +283,10 @@ void ALGraph::findAllPathForOutput(int departure, int arrival, ArcNode *p, strin
 }
 
 void ALGraph::findLeastTime(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
-                            vector<string> &output, string &time, string &startTime)
+                            vector<string> &output, string &time, string &startTime, vector<string> &finalOutput)
 {
 	static int j = 1;
+	int x = 0;
 	if (output.size() > 4)
 	{
 		return;
@@ -319,6 +320,7 @@ void ALGraph::findLeastTime(int departure, int arrival, ArcNode *p, string &prio
 		if (output.empty())
 		{
 			minArrivalTime = flight[p->flightID[j - 1]].arrivalTime;
+			x = j - 1;
 		}
 		else
 		{
@@ -329,6 +331,7 @@ void ALGraph::findLeastTime(int departure, int arrival, ArcNode *p, string &prio
 				    compareTime(flight[p->flightID[i]].arrivalTime, minArrivalTime))
 				{
 					minArrivalTime = flight[p->flightID[i]].arrivalTime;
+					x = i;
 				}
 			}
 		}
@@ -362,11 +365,7 @@ void ALGraph::findLeastTime(int departure, int arrival, ArcNode *p, string &prio
 			stringstream os;
 			string temp;
 			os << departure << "->" << p->adjVex << "航班号:";
-			for (int i = 0; i < p->num; ++i)
-			{
-				os << p->flightID[i] << ",";
-			}
-			os << p->flightID[p->num];
+			os << flight[p->flightID[x]].flightId;
 			os >> temp;
 			output.push_back(temp);
 			if (p->adjVex == arrival)
@@ -375,13 +374,13 @@ void ALGraph::findLeastTime(int departure, int arrival, ArcNode *p, string &prio
 				if (time >= tmp)
 				{
 					time = tmp;
-
+					finalOutput = output;
 				}
 			}
 			else
 			{
 				findLeastTime(p->adjVex, arrival, vertices[p->adjVex].firstArc, minArrivalTime, visited, output, time,
-				              startTime);
+				              startTime, finalOutput);
 			}
 			visited[p->adjVex] = false;
 			output.pop_back();
@@ -468,49 +467,84 @@ void ALGraph::findPathInCondition(string &model, string &departureTime1, string 
 				}
 			}
 		}
-		for (auto j = i.pathVex.front().second.begin(); j != i.pathVex.front().second.end(); ++j)
-		{
-			for (auto k = i.pathVex.back().second.begin(); k != i.pathVex.back().second.end(); ++k)
-			{
-				if (compareTime(flight[*j].arrivalTime, flight[*k].departureTime))
-				{
-					//判断飞行时间
-					if (transferTime == "no" ||
-					    transferTime > timeDifference(flight[*j].departureTime, flight[*k].arrivalTime))
-					{
-						stringstream os;
-						string temp;
-						//路径
-						os << i.startVex << "->" << i.pathVex.begin()->first << "->" << i.targetVex;
-						os >> temp;
-						output.push_back(temp);
-						//航班
-						temp.clear();
-						os.clear();
-						os << *j << "->" << *k;
-						os >> temp;
-						output.push_back(temp);
-						//分割符
-						temp.clear();
-						os.clear();
-						os << "====================";
-						os >> temp;
-						output.push_back(temp);
-						if ((flight[*j].airFares + flight[*k].airFares) < cheapestCost)
-						{
-							cheapestCost = flight[*j].airFares + flight[*k].airFares;
-							cheapestAirline = to_string(*j) + "->" + to_string(*k);
-						}
-					}
 
+		auto x = i.pathVex.begin();
+		string priorArrivalTime;
+		string tmp;
+		output.clear();
+		findValidPath(transferTime, output, x, i.pathVex, cheapestCost, cheapestAirline,
+		              flight[(*x).second.front()].departureTime, priorArrivalTime, 0, tmp);
+	}
+	if (cheapestAirline.empty())
+	{
+		cout << "无符合条件的航班!" << endl;
+	}
+	else
+	{
+		cout << endl << "最低花费:" << cheapestCost << endl;
+		cout << "航班:" << cheapestAirline << endl;
+	}
+	path.clear();
+}
+
+void ALGraph::findValidPath(const string &transferTime, vector<string> &output,
+                            _List_iterator<pair<int, list<int, allocator<int>>>> &i,
+                            list<pair<int, list<int> > > &pathVex, int &cheapestCost, string &cheapestAirline,
+                            string &startTime, string &priorArrivalTime, int cntCost, string &cntCheapestAirplane)
+{
+	if (i != pathVex.end())
+	{
+		for (auto k = (*i).second.begin(); k != (*i).second.end(); ++k)
+		{
+			if (output.empty())
+			{
+				priorArrivalTime.clear();
+				startTime = flight[*k].departureTime;
+			}
+			if (compareTime(priorArrivalTime, flight[*k].departureTime))
+			{
+				//判断飞行时间
+				if (transferTime != "no" &&
+				    transferTime < timeDifference(startTime, flight[*k].arrivalTime))
+				{
+					continue;
+				}
+				else
+				{
+					stringstream os;
+					string temp;
+					//路径
+					os << flight[*k].departureAirport << "->" << flight[*k].arrivalAirport << "航班:"
+					   << flight[*k].flightId;
+					os >> temp;
+					output.push_back(temp);
+					cntCost += flight[*k].airFares;
+					cntCheapestAirplane += to_string(*k) + "->";
+					auto j = i;
+					findValidPath(transferTime, output, ++j, pathVex, cheapestCost, cheapestAirline, startTime,
+					              flight[*k].arrivalTime, cntCost, cntCheapestAirplane);
+					cntCost -= flight[*k].airFares;
+					cntCheapestAirplane.pop_back();
+					while ((!cntCheapestAirplane.empty()) && (cntCheapestAirplane.back() != '>'))
+					{
+						cntCheapestAirplane.pop_back();
+					}
+					output.pop_back();
 				}
 			}
 		}
 	}
-	Display(output);
-	cout << endl << "最低花费:" << cheapestCost << endl;
-	cout << "航班:" << cheapestAirline << endl;
-	path.clear();
+	else
+	{
+		Display(output);
+		if (cntCost < cheapestCost)
+		{
+			cheapestCost = cntCost;
+			cheapestAirline = cntCheapestAirplane;
+			cheapestAirline.pop_back();
+			cheapestAirline.pop_back();
+		}
+	}
 }
 
 void ALGraph::floyd()
@@ -545,11 +579,14 @@ void ALGraph::mainFunc(int departure, int arrival, int opId)
 		getchar();
 		static string leastTime = "999999";
 		string a;
+		vector<string> finalOutput;
 
 		a = flight[p->flightID[0]].departureTime;
 		findLeastTime(departure, arrival, p, priorArrivalTime, visited, output, leastTime,
-		              a);
-		cout << leastTime << endl;
+		              a, finalOutput);
+		cout << "最短时间: " << leastTime << endl;
+		cout << "路径:" << endl;
+		Display(finalOutput);
 		leastTime = "999999";
 	}
 	else if (opId == 3)

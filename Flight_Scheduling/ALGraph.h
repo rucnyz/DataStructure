@@ -125,7 +125,7 @@ private:
 
 	// 用于找到两个机场之间的所有可行路径，并从中找到时间最短的路径
 	void findLeastTime(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
-	                   vector<string> &output, string &time, string &startTime);
+	                   vector<string> &output, string &time, string &startTime, vector<string> &finalOutput);
 
 	// 用于对已找到的所有可行路线进行条件搜索
 	void findPathInCondition(string &model, string &departureTime1, string &departureTime2, string &arrivalTime1,
@@ -135,6 +135,10 @@ private:
 	void findAllPathForConditionSearch(int departure, int arrival, ArcNode *p, string &priorArrivalTime, bool *visited,
 	                                   vector<string> &eachPath, list<MultiArcNode> &allPath);
 
+	void findValidPath(const string &transferTime, vector<string> &output,
+	                   _List_iterator<pair<int, list<int, allocator<int>>>> &i,
+	                   list<pair<int, list<int> > > &pathVex, int &cheapestCost, string &cheapestAirline,
+	                   string &startTime, string &priorArrivalTime, int cntCost, string &cntCheapestAirplane);
 };
 
 
